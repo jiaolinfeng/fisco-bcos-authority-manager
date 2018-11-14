@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
+         http://www.springframework.org/schema/tx   
+    http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
+         http://www.springframework.org/schema/aop   
+    http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    <bean id="pool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="50" />
+		<property name="maxPoolSize" value="100" />
+		<property name="queueCapacity" value="500" />
+		<property name="keepAliveSeconds" value="60" />
+		<property name="rejectedExecutionHandler">
+			<bean class="java.util.concurrent.ThreadPoolExecutor.AbortPolicy" />
+		</property>
+    </bean>
+    
+    <bean id="async" class="org.bcos.web3j.utils.Async">
+        <constructor-arg type="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" ref="pool" />
+    </bean>
+
+	<bean id="encryptType" class="org.bcos.web3j.crypto.EncryptType">
+		<constructor-arg value="0"/>
+	</bean>
+	
+
+	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
+		<property name="systemProxyAddress" value="0x4437f8c9cd1e6a3e8ec9c3460c4bc209acdca052" />
+	    
+	    <!-- god -->
+	    <property name="privKey" value="d6b9a66ae48ae8ac586a7856a7bd566cff0b6f40cd12924929754233c50524d5" />
+        <property name="account" value="0x562583ff5f147efa07b95de17ea516bb53bc0d7b" />
+		
+		<!--   <property name="privKey" value="b28f7491400476865276914bec95bdd8ea0c02e70537e2ef88098c2aeb0a722a" />
+		<property name="account" value="0xd98fc95571abbed422a03007a2b21f6da081b396" />-->
+			<!-- 
+		<property name="privKey" value="bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd" />
+		<property name="account" value="0x776bd5cf9a88e9437dc783d6414bccc603015cf0" /> -->
+		<property name="outPutpath" value="./output/" />
+	</bean>
+	
+	<bean id="channelService" class="org.bcos.channel.client.Service">
+		<property name="orgID" value="ES" />
+		<property name="connectSeconds" value="10" />
+		<property name="connectSleepPerMillis" value="10" />
+		<property name="allChannelConnections">
+			<map>
+				<entry key="ES">
+					<bean class="org.bcos.channel.handler.ChannelConnections">
+						<!--CA证书路径-->
+                        <property name="caCertPath" value="classpath:ca.crt" />
+                        <!--client.keystore证书路径-->
+                        <property name="clientKeystorePath" value="classpath:client.keystore" />
+						<property name="keystorePassWord" value="123456" />
+						<property name="clientCertPassWord" value="123456" />
+                        <property name="connectionsStr">
+							<list>
+								<value>node1@192.168.22.251:30304</value>  
+							</list>
+						</property>
+                    </bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>
