@@ -9,6 +9,7 @@ import org.bcos.channel.client.Service;
 import org.bcos.channel.handler.ChannelConnections;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.channel.ChannelEthereumService;
+import org.bcos.web3j.protocol.core.methods.response.Log;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -24,12 +25,13 @@ public class Context {
     private Service service = null;
     private Web3j web3 = null;
 
-    public static BigInteger GAS_PRICE = new BigInteger("99999999999");
-    public static BigInteger GAS_LIMIT = new BigInteger("9999999999999");
+    public static final BigInteger GAS_PRICE = new BigInteger("99999999999");
+    public static final BigInteger GAS_LIMIT = new BigInteger("9999999999999");
+    public static final BigInteger INIT_WEI = new BigInteger("0");
 
     private static Context inst = null;
 
-    public static Context getInstance() {
+    public static synchronized Context getInstance() {
         if (inst == null) {
             inst = new Context();
         }
@@ -69,7 +71,7 @@ public class Context {
             channelEthereumService.setChannelService(service);
             channelEthereumService.setTimeout(10000);
             web3 = Web3j.build(channelEthereumService);
-            //Thread.sleep(2000);
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("connect failed");
