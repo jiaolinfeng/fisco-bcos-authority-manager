@@ -32,11 +32,15 @@
 	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
 		<property name="systemProxyAddress" value="0x4437f8c9cd1e6a3e8ec9c3460c4bc209acdca052" />
 	
-		<property name="privKey" value="b28f7491400476865276914bec95bdd8ea0c02e70537e2ef88098c2aeb0a722a" />
-		<property name="account" value="0xd98fc95571abbed422a03007a2b21f6da081b396" />
+		  <!-- god -->
+        <property name="privKey" value="d6b9a66ae48ae8ac586a7856a7bd566cff0b6f40cd12924929754233c50524d5" />
+        <property name="account" value="0x562583ff5f147efa07b95de17ea516bb53bc0d7b" />
+        
+        <!--   <property name="privKey" value="b28f7491400476865276914bec95bdd8ea0c02e70537e2ef88098c2aeb0a722a" />
+        <property name="account" value="0xd98fc95571abbed422a03007a2b21f6da081b396" />-->
 			<!-- 
 		<property name="privKey" value="bcec428d5205abe0f0cc8a734083908d9eb8563e31f943d760786edf42ad67dd" />
-		<property name="account" value="0x776bd5cf9a88e9437dc783d6414bccc603015cf0" /> -->
+		<property name="account" value="0x64fa644d2a694681bd6addd6c5e36cccd8dcdde3" /> -->
 		<property name="outPutpath" value="./output/" />
 	</bean>
 	

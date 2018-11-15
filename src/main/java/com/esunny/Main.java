@@ -13,7 +13,9 @@ import org.bcos.web3j.abi.datatypes.Utf8String;
 import org.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.crypto.GenCredential;
+import org.bcos.web3j.crypto.Hash;
 import org.bcos.web3j.protocol.Web3j;
+import org.bcos.web3j.utils.Numeric;
 
 import com.esunny.connection.Context;
 
@@ -27,7 +29,8 @@ public class Main extends Application {
 
     
     public static void main(String args[]) throws InterruptedException, ExecutionException {
-
+ 
+  // hello world address 0x919868496524eedc26dbb81915fa1547a20f8998
         System.out.println("init context...");
         boolean isReady = Context.getInstance().init();
         System.out.println("init " + isReady);

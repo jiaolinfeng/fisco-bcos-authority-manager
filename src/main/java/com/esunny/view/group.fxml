@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+<AnchorPane prefHeight="296.0" prefWidth="756.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="200.0" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+         <children> 
+            <Label text="黑名单模式："  />
+            <Label text="关闭" fx:id="blackStatusLabel" />
+            <Button mnemonicParsing="false" text="关闭" onAction="#disableBlack" />
+            <Button mnemonicParsing="false" text="开启" onAction="#enableBlack" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <TextField fx:id="groupAddrField" editable="false" prefHeight="25.0" prefWidth="340.0" />
+            <Label fx:id="groupDescLabel"  prefHeight="25.0" prefWidth="170.0" />
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" layoutX="-168.0" layoutY="-84.0" prefHeight="50.0" prefWidth="200.0" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+         <children>
+            <TextField fx:id="addressField" prefHeight="25.0" prefWidth="340.0" promptText="合约地址" />
+            <TextField fx:id="functionField" prefHeight="25.0" prefWidth="170.0" promptText="合约接口" />
+            <Button mnemonicParsing="false" onAction="#addPermission" prefHeight="25.0" text="设置权限" />
+            <Button mnemonicParsing="false" onAction="#removePermission" prefHeight="25.0" text="删除权限" />
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </HBox>
+      <TableView fx:id="permissionTable" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
+        <columns>
+          <TableColumn maxWidth="0.0" minWidth="0.0" prefWidth="0.0" resizable="false" text="地址" />
+          <TableColumn prefWidth="700.0" text="接口" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
