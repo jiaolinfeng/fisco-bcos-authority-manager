@@ -1,6 +1,8 @@
 package com.esunny.controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.bcos.contract.source.AuthorityFilter;
@@ -31,6 +33,12 @@ import javafx.scene.control.TextField;
 public class FilterManagerController {
 
     @FXML
+    private TextField filterNameField;
+    
+    @FXML
+    private TextField filterDescField;
+    
+    @FXML
     private TextField accountField;
     
     @FXML
@@ -44,38 +52,57 @@ public class FilterManagerController {
     
     private TransactionFilterChain filterChain;
     
+    private Set<String> filterAddrTable = new HashSet<String>();
+    
+    private Web3j web3;
+    private ToolConf toolConf;
+    private Credentials credentials;
+    
     @FXML
     private void initialize() {
-        Web3j web3 = Context.getInstance().getWeb3();
-        ToolConf toolConf = Context.getInstance().getContext().getBean(ToolConf.class);
-        Credentials credentials = GenCredential.create(toolConf.getPrivKey());
+        web3 = Context.getInstance().getWeb3();
+        toolConf = Context.getInstance().getContext().getBean(ToolConf.class);
+        credentials = GenCredential.create(toolConf.getPrivKey());
         
         try {
             SystemProxy systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), 
                     web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
             List<Type> transactionFilterChainRoute = systemProxy.getRoute(new Utf8String("TransactionFilterChain")).get();    
             filterChain = TransactionFilterChain.load(
-                    transactionFilterChainRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
-            
+                    transactionFilterChainRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);        
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        load();
+    }
+    
+    private void load() {
+        if (filterChain == null) {
+            return;
+        }
+        try {
             int filterSize = filterChain.getFiltersLength().get().getValue().intValue();
             for (int i = 0; i < filterSize; ++i) {
                 String filterAddress = filterChain.getFilter(new Uint256(i)).get().toString();
-                
-                AuthorityFilter filter = AuthorityFilter.load(filterAddress, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
-                List<Type> filterInfo = filter.getInfo().get();
-                System.out.println(filterInfo.get(0) + " " + filterInfo.get(2));
-                
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/esunny/view/filter.fxml"));
-                FilterController filterController = new FilterController(filter);
-                loader.setController(filterController);
-                Parent node = loader.load();
-                Tab filterTab = new Tab(filterInfo.get(0).toString());
-                filterTab.setContent(node);
-                
-                filterPane.getTabs().add(filterTab);
+                boolean isExist = !filterAddrTable.add(filterAddress);
+                if (!isExist) {
+                    AuthorityFilter filter = AuthorityFilter.load(filterAddress, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+                    List<Type> filterInfo = filter.getInfo().get();
+                    System.out.println(filterInfo.get(0) + " " + filterInfo.get(2));
+                    
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/esunny/view/filter.fxml"));
+                    FilterController filterController = new FilterController(filter);
+                    loader.setController(filterController);
+                    Parent node = loader.load();
+                    Tab filterTab = new Tab(filterInfo.get(0).toString());
+                    filterTab.setContent(node);
+                    
+                    filterPane.getTabs().add(filterTab);
+                }
             }  
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO: handle exception
         }
     }
     
@@ -115,4 +142,27 @@ public class FilterManagerController {
         }
     }
     
+    @FXML
+    private void addFilter() {
+        String filterName = filterNameField.getText().trim();
+        if (filterName.isEmpty()) {
+            DialogUtils.alert("过滤器名称为空");
+            return;
+        }
+        
+        String filterDesc = filterDescField.getText().trim();
+        
+       
+        try {
+            filterChain.addFilterAndInfo(new Utf8String(filterName), new Utf8String(""), new Utf8String(filterDesc)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            DialogUtils.alert("过滤器创建失败");
+            return;
+        }
+        
+        load();
+       
+    }
 }
