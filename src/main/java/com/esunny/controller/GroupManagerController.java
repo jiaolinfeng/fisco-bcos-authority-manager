@@ -6,20 +6,25 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.bcos.contract.source.Group;
-import org.bcos.contract.tools.ToolConf; 
+import org.bcos.contract.tools.ToolConf;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.crypto.GenCredential;
 import org.bcos.web3j.protocol.Web3j;
 
 import com.esunny.connection.Context;
-import com.esunny.util.Storage;
+import com.esunny.ui.util.DialogUtils;
+import com.esunny.util.Storage; 
 
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class GroupManagerController {
     
@@ -31,6 +36,9 @@ public class GroupManagerController {
     private Credentials credentials;
     
     private List<Group> groupList = new ArrayList<Group>();
+    
+    @FXML
+    private AnchorPane anchorPane;
     
     @FXML
     private TabPane groupPane;
@@ -75,10 +83,74 @@ public class GroupManagerController {
             e.printStackTrace();
             return;
         }
+        
+        groupList.add(group);
 
         int groupIndex = 0;
         Storage storage = Storage.getInstance();
         String groupAddress = group.getContractAddress();
+        String groupNumberStr = storage.get(GROUP_NUM_KEY);
+        if (groupNumberStr != null) { 
+            groupIndex = Integer.parseInt(groupNumberStr);
+        }
+        storage.put(GROUP_PREFIX + groupIndex, groupAddress);
+        storage.put(GROUP_NUM_KEY, "" + (groupIndex + 1));
+        
+        System.out.println(groupAddress);
+        addGroupTab(groupIndex, group);
+    }
+    
+    private String openImportGroupDialog() {
+        try {
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/esunny/view/dialog_import_group.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("New Contract");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(anchorPane.getScene().getWindow());
+            Scene scene = new Scene(loader.load());
+            dialogStage.setScene(scene);
+            dialogStage.setResizable(false);
+
+            ImportGroupDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+
+            dialogStage.showAndWait();
+
+            if (controller.isConfirmed()) {  
+                return controller.getGroupAddress();
+            }
+            
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new String();
+    }
+    
+    @FXML
+    private void importGroup(Event event) {  
+        
+        String groupAddress = openImportGroupDialog();
+        if (groupAddress.isEmpty()) {
+            DialogUtils.alert("group address format error");
+            return;
+        }
+        
+        Group group;
+        try {
+            group = Group.load(groupAddress, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            group.getDesc().get(); // 只是为了测试地址是否正确
+        } catch (InterruptedException | ExecutionException e) { 
+            e.printStackTrace();
+            return;
+        }
+        
+        groupList.add(group);
+
+        int groupIndex = 0;
+        Storage storage = Storage.getInstance(); 
         String groupNumberStr = storage.get(GROUP_NUM_KEY);
         if (groupNumberStr != null) { 
             groupIndex = Integer.parseInt(groupNumberStr);

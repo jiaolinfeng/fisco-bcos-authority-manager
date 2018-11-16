@@ -11,6 +11,7 @@ import org.bcos.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.bcos.web3j.utils.Numeric;
 
 import com.esunny.ui.util.DialogUtils;
+import com.esunny.util.FormatUtils;
 
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -86,16 +87,17 @@ public class FilterController {
     @FXML
     private void setGroup(Event event) {
         String account = accountField.getText().trim();
-        if (account.isEmpty()) {
-            DialogUtils.alert("account is empty");
+        if (!FormatUtils.isAddress(account)) { 
+            DialogUtils.alert("account format error");
             return;
         }
         
         String groupAddress = groupField.getText().trim();
-        if (groupAddress.isEmpty()) {
-            DialogUtils.alert("group is empty");
+        if (!FormatUtils.isAddress(groupAddress)) { 
+            DialogUtils.alert("address format error");
             return;
         }
+         
         
         try {
             TransactionReceipt receipt = filter.setUserToGroup(new Address(Numeric.cleanHexPrefix(account)), 
@@ -115,8 +117,8 @@ public class FilterController {
     @FXML
     private void getGroup(Event event) {
         String account = accountField.getText().trim();
-        if (account.isEmpty()) {
-            DialogUtils.alert("account is empty");
+        if (!FormatUtils.isAddress(account)) { 
+            DialogUtils.alert("account format error");
             return;
         }
         

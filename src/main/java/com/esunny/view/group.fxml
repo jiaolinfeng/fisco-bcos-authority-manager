@@ -16,16 +16,17 @@
             <Insets left="5.0" right="5.0" />
          </padding>
          <children> 
-            <Label text="黑名单模式："  />
-            <Label text="关闭" fx:id="blackStatusLabel" />
-            <Button mnemonicParsing="false" text="关闭" onAction="#disableBlack" />
-            <Button mnemonicParsing="false" text="开启" onAction="#enableBlack" />
+            <Label text="黑名单模式：" />
+            <Label fx:id="blackStatusLabel" text="关闭" />
+            <Button mnemonicParsing="false" onAction="#disableBlack" text="关闭" />
+            <Button mnemonicParsing="false" onAction="#enableBlack" text="开启" />
          </children>
       </HBox>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
          <children>
             <TextField fx:id="groupAddrField" editable="false" prefHeight="25.0" prefWidth="340.0" />
-            <Label fx:id="groupDescLabel"  prefHeight="25.0" prefWidth="170.0" />
+            <TextField prefHeight="25.0" prefWidth="168.0" fx:id="groupDescField" promptText="组描述" />
+            <Button mnemonicParsing="false" prefHeight="25.0" text="修改" onAction="#setGroupDesc" />
          </children>
          <padding>
             <Insets left="5.0" right="5.0" />

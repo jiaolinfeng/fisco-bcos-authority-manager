@@ -14,6 +14,7 @@ import org.bcos.web3j.utils.Numeric;
 
 import com.esunny.ui.model.UIPermission;
 import com.esunny.ui.util.DialogUtils;
+import com.esunny.util.FormatUtils;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +37,7 @@ public class GroupController {
     private TextField groupAddrField;
     
     @FXML
-    private Label groupDescLabel;
+    private TextField groupDescField;
     
     @FXML
     private TextField addressField;
@@ -68,7 +69,11 @@ public class GroupController {
 
         groupAddrField.setText(group.getContractAddress());
         try {
-            groupDescLabel.setText(group.getDesc().get().getValue());
+            String groupDesc = group.getDesc().get().getValue().trim();
+            if (groupDesc.isEmpty()) {
+                groupDesc = "无组描述";
+            }
+            groupDescField.setText(groupDesc);
             blackStatus = group.getBlack().get().getValue();
             blackStatusLabel.setText(blackStatus ? "开启" : "关闭");
         } catch (InterruptedException | ExecutionException e) { 
@@ -88,23 +93,32 @@ public class GroupController {
         setPermission(false);
     }
     
+    @FXML
+    private void setGroupDesc() {
+        String groupDesc = groupDescField.getText().trim();
+        try {
+            group.setDesc(new Utf8String(groupDesc)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
     private void setPermission(boolean permission) {
- 
+        
         String address = addressField.getText().trim();
-        if (address.isEmpty()) { 
-            DialogUtils.alert("address is empty");
+        if (!FormatUtils.isAddress(address)) { 
+            DialogUtils.alert("address format error");
             return;
         }
         
         String function = functionField.getText().trim();
-        if (function.isEmpty()) { 
-            DialogUtils.alert("function is empty");
+        if (!FormatUtils.isInterface(function)) { 
+            DialogUtils.alert("function format error");
             return;
         }
         
-        String functionDesc = "Contract:" + address + ", Function:"+function;
-        System.out.println(function);
-        System.out.println(Hash.sha3(function).substring(2,10));
+        String functionDesc = "{\"contract\":\"" + address + "\", \"function\":\""+function+"\"}";
         System.out.println(functionDesc);
         try {
             TransactionReceipt receipt = 
@@ -132,7 +146,7 @@ public class GroupController {
             for (Bytes32 key : keys) { 
                 String desc = group.getFuncDescwithPermissionByKey(key).get().getValue();
                 if (desc.isEmpty()) {
-                    System.out.println("" + key + " no permission");
+                    System.out.println(Numeric.toHexString(key.getValue()) + " no permission");
                 } else {
                     System.out.println(desc);
                     UIPermission permission = new UIPermission();

@@ -19,6 +19,7 @@ import org.bcos.web3j.utils.Numeric;
 
 import com.esunny.connection.Context;
 import com.esunny.ui.util.DialogUtils;
+import com.esunny.util.FormatUtils;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -81,20 +82,20 @@ public class FilterManagerController {
     @FXML
     private void testPermission() {
         String account = accountField.getText().trim();
-        if (account.isEmpty()) { 
-            DialogUtils.alert("account is empty");
+        if (!FormatUtils.isAddress(account)) { 
+            DialogUtils.alert("account format error");
             return;
         }
         
         String address = addressField.getText().trim();
-        if (address.isEmpty()) { 
-            DialogUtils.alert("address is empty");
+        if (!FormatUtils.isAddress(address)) { 
+            DialogUtils.alert("address format error");
             return;
         }
         
         String function = functionField.getText().trim();
-        if (function.isEmpty()) { 
-            DialogUtils.alert("function is empty");
+        if (!FormatUtils.isInterface(function)) { 
+            DialogUtils.alert("function format error");
             return;
         }
         
