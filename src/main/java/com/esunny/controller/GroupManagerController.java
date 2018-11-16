@@ -5,15 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.bcos.contract.source.ContractAbiMgr;
 import org.bcos.contract.source.Group;
+import org.bcos.contract.source.SystemProxy;
+import org.bcos.contract.source.TransactionFilterChain;
 import org.bcos.contract.tools.ToolConf;
+import org.bcos.web3j.abi.datatypes.Type;
+import org.bcos.web3j.abi.datatypes.Utf8String;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.crypto.GenCredential;
 import org.bcos.web3j.protocol.Web3j;
 
 import com.esunny.connection.Context;
 import com.esunny.ui.util.DialogUtils;
-import com.esunny.util.Storage; 
+import com.esunny.util.Storage;
 
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -22,6 +27,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -44,10 +50,30 @@ public class GroupManagerController {
     private TabPane groupPane;
     
     @FXML
+    private TextField contractNameField;
+    
+    @FXML
+    private TextField contractAddrField;
+    
+    private ContractAbiMgr contractAbiMgr;
+    
+    @FXML
     private void initialize() {
         web3 = Context.getInstance().getWeb3();
         toolConf = Context.getInstance().getContext().getBean(ToolConf.class);
         credentials = GenCredential.create(toolConf.getPrivKey());
+        
+        
+        try {
+            SystemProxy systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), 
+                    web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            List<Type> contractAbiMgrRoute = systemProxy.getRoute(new Utf8String("ContractAbiMgr")).get();
+            contractAbiMgr = ContractAbiMgr.load(
+                    contractAbiMgrRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }    
         
         Storage storage = Storage.getInstance();
         String groupNumberStr = storage.get(GROUP_NUM_KEY);
@@ -134,7 +160,7 @@ public class GroupManagerController {
         
         String groupAddress = openImportGroupDialog();
         if (groupAddress.isEmpty()) {
-            DialogUtils.alert("group address format error");
+            DialogUtils.alert("用户组地址格式不正确");
             return;
         }
         
@@ -187,6 +213,32 @@ public class GroupManagerController {
             e.printStackTrace();
             return;
         }
+    }
+    
+    @FXML
+    private void getContractAddr(Event event) {
+        String contractName = contractNameField.getText().trim();
+        if (contractName.isEmpty()) {
+            DialogUtils.alert("合约名称为空");
+            return;
+        }
+        
+        if (contractAbiMgr == null) {
+            DialogUtils.alert("CNS初始化失败");
+            return;
+        }
+        
+        String contractAddr;
+        try {
+            contractAddr = contractAbiMgr.getAddr(new Utf8String(contractName)).get().toString();
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            DialogUtils.alert("CNS查询失败");
+            return;
+        }
+
+        contractAddrField.setText(contractAddr);
     }
     
     

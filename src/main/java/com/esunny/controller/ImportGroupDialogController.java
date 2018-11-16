@@ -28,7 +28,7 @@ public class ImportGroupDialogController {
         groupAddress = groupField.getText().trim();
         
         if (!FormatUtils.isAddress(groupAddress)) {
-            DialogUtils.alert("contract name is empty");
+            DialogUtils.alert("用户组地址格式不正确");
             return;
         }
 

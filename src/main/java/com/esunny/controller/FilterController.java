@@ -88,13 +88,13 @@ public class FilterController {
     private void setGroup(Event event) {
         String account = accountField.getText().trim();
         if (!FormatUtils.isAddress(account)) { 
-            DialogUtils.alert("account format error");
+            DialogUtils.alert("账户地址格式错误");
             return;
         }
         
         String groupAddress = groupField.getText().trim();
         if (!FormatUtils.isAddress(groupAddress)) { 
-            DialogUtils.alert("address format error");
+            DialogUtils.alert("合约地址格式错误");
             return;
         }
          
@@ -103,22 +103,22 @@ public class FilterController {
             TransactionReceipt receipt = filter.setUserToGroup(new Address(Numeric.cleanHexPrefix(account)), 
                     new Address(Numeric.cleanHexPrefix(groupAddress))).get();
             if (receipt == null) {
-                DialogUtils.alert("set group failed");
+                DialogUtils.alert("设置用户组失败");
                 return;
             }
         } catch (InterruptedException | ExecutionException e) { 
             e.printStackTrace();
-            DialogUtils.alert("set group failed");
+            DialogUtils.alert("设置用户组失败");
             return;
         }
-        DialogUtils.info("set group success");
+        DialogUtils.info("设置用户组成功");
     }
     
     @FXML
     private void getGroup(Event event) {
         String account = accountField.getText().trim();
         if (!FormatUtils.isAddress(account)) { 
-            DialogUtils.alert("account format error");
+            DialogUtils.alert("账户地址格式错误");
             return;
         }
         

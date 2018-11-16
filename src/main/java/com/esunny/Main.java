@@ -3,6 +3,7 @@ package com.esunny;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 import org.bcos.contract.source.SystemProxy;
 import org.bcos.contract.source.TransactionFilterChain;
@@ -18,6 +19,8 @@ import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.utils.Numeric;
 
 import com.esunny.connection.Context;
+import com.esunny.util.FormatUtils;
+import com.esunny.util.Storage;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -28,24 +31,13 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     
-    public static void main(String args[]) throws InterruptedException, ExecutionException {
- 
-  // hello world address 0x919868496524eedc26dbb81915fa1547a20f8998
+    public static void main(String args[])  {
+        
+        // hello world address 0x919868496524eedc26dbb81915fa1547a20f8998
         System.out.println("init context...");
         boolean isReady = Context.getInstance().init();
         System.out.println("init " + isReady);
        
-        /*new Thread(new Runnable() {
-            
-            @Override
-            public void run() {
-                System.out.println("init context...");
-                boolean isReady = Context.getInstance().init();
-                System.out.println("init " + isReady);
-            }
-            
-        }).start();
-        */
         launch(args);
         
         System.exit(0);

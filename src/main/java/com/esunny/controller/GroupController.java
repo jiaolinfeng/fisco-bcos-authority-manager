@@ -108,13 +108,13 @@ public class GroupController {
         
         String address = addressField.getText().trim();
         if (!FormatUtils.isAddress(address)) { 
-            DialogUtils.alert("address format error");
+            DialogUtils.alert("合约地址格式错误");
             return;
         }
         
         String function = functionField.getText().trim();
         if (!FormatUtils.isInterface(function)) { 
-            DialogUtils.alert("function format error");
+            DialogUtils.alert("合约接口格式错误");
             return;
         }
         
@@ -126,16 +126,16 @@ public class GroupController {
                     new Utf8String(Numeric.toHexString(Hash.sha3(function.getBytes())).substring(2,10)),
                     new Utf8String(functionDesc), new Bool(permission)).get();
             if (receipt == null) {
-                DialogUtils.alert("set permission failed");
+                DialogUtils.alert("组权限设置失败");
                 return;
             }
         } catch (InterruptedException | ExecutionException e) { 
             e.printStackTrace();
-            DialogUtils.alert("set permission failed");
+            DialogUtils.alert("组权限设置失败");
             return;
         }
 
-        DialogUtils.info("set permission success"); 
+        DialogUtils.info("组权限设置成功"); 
         load();
     }
     

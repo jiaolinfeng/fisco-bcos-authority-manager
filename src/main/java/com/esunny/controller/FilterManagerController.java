@@ -83,19 +83,19 @@ public class FilterManagerController {
     private void testPermission() {
         String account = accountField.getText().trim();
         if (!FormatUtils.isAddress(account)) { 
-            DialogUtils.alert("account format error");
+            DialogUtils.alert("账户地址格式错误");
             return;
         }
         
         String address = addressField.getText().trim();
         if (!FormatUtils.isAddress(address)) { 
-            DialogUtils.alert("address format error");
+            DialogUtils.alert("合约地址格式错误");
             return;
         }
         
         String function = functionField.getText().trim();
         if (!FormatUtils.isInterface(function)) { 
-            DialogUtils.alert("function format error");
+            DialogUtils.alert("合约接口格式错误");
             return;
         }
         
@@ -105,13 +105,13 @@ public class FilterManagerController {
                     new Utf8String(Numeric.toHexString(Hash.sha3(function.getBytes())).substring(2,10)),
                     new Utf8String("")).get().getValue();
             if (permission) {
-                DialogUtils.info("account has permission");
+                DialogUtils.info("账户" + account + "有接口" + function + "的权限");
             } else {
-                DialogUtils.info("account has no permission");
+                DialogUtils.info("账户" + account + "没有接口" + function + "的权限");
             }
         } catch (InterruptedException | ExecutionException e) { 
             e.printStackTrace();
-            DialogUtils.alert("test failed");
+            DialogUtils.alert("测试权限失败");
         }
     }
     
