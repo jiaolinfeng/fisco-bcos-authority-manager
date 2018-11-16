@@ -79,6 +79,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.fusesource.leveldbjni/leveldbjni-all
     compile group: 'org.fusesource.leveldbjni', name: 'leveldbjni-all', version: '1.8'
     
+    runtime files('lib/web3sdk.jar')
+    
     compile 'com.google.code.gson:gson:2.8.0'
     runtime 'com.google.code.gson:gson:2.8.0'
 			
