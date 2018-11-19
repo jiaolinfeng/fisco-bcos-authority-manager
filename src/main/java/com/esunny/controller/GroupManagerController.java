@@ -70,9 +70,11 @@ public class GroupManagerController {
             List<Type> contractAbiMgrRoute = systemProxy.getRoute(new Utf8String("ContractAbiMgr")).get();
             contractAbiMgr = ContractAbiMgr.load(
                     contractAbiMgrRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            contractAbiMgr.getAbiCount().get();
         } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            DialogUtils.alert("初始化CNS错误");
+            System.exit(-1);
         }    
         
         Storage storage = Storage.getInstance();

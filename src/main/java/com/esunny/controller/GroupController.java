@@ -34,6 +34,9 @@ public class GroupController {
     private Label blackStatusLabel;
     
     @FXML
+    private Label createStatusLabel;
+    
+    @FXML
     private TextField groupAddrField;
     
     @FXML
@@ -51,6 +54,8 @@ public class GroupController {
     private ObservableList<UIPermission> permissionList = FXCollections.observableArrayList();
     
     private boolean blackStatus;
+    
+    private boolean createStatus;
     
     public GroupController(Group group) {
         this.group  = group;
@@ -76,6 +81,9 @@ public class GroupController {
             groupDescField.setText(groupDesc);
             blackStatus = group.getBlack().get().getValue();
             blackStatusLabel.setText(blackStatus ? "开启" : "关闭");
+            
+            createStatus = group.getCreate().get().getValue();
+            createStatusLabel.setText(createStatus ? "开启" : "关闭");
         } catch (InterruptedException | ExecutionException e) { 
             e.printStackTrace();
         }
@@ -160,8 +168,6 @@ public class GroupController {
         } 
     }
     
-    
-    
     @FXML
     private void enableBlack() {
         setBlackStatus(true);
@@ -183,5 +189,28 @@ public class GroupController {
         }
         blackStatus = enable;
         blackStatusLabel.setText(blackStatus ? "开启" : "关闭");
+    }
+    
+    @FXML
+    private void enableCreate() {
+        setCreate(true);
+    }
+    
+    @FXML
+    private void disableCreate() {
+        setCreate(false);
+    }
+    
+    private void setCreate(boolean enable) {
+        if (enable == createStatus)
+            return;
+        try {
+            group.setCreate(new Bool(enable)).get();
+        } catch (InterruptedException | ExecutionException e) { 
+            e.printStackTrace();
+            return;
+        }
+        createStatus = enable;
+        createStatusLabel.setText(createStatus ? "开启" : "关闭");
     }
 }

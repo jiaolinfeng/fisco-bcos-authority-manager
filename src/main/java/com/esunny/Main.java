@@ -38,6 +38,11 @@ public class Main extends Application {
         boolean isReady = Context.getInstance().init();
         System.out.println("init " + isReady);
        
+        if (!isReady) {
+            System.out.println("connect to block chain failed");
+            System.exit(0);
+        }
+        
         launch(args);
         
         System.exit(0);
