@@ -10,13 +10,17 @@ import org.bcos.contract.source.Group;
 import org.bcos.contract.source.SystemProxy;
 import org.bcos.contract.source.TransactionFilterChain;
 import org.bcos.contract.tools.ToolConf;
+import org.bcos.web3j.abi.datatypes.Address;
+import org.bcos.web3j.abi.datatypes.DynamicArray;
 import org.bcos.web3j.abi.datatypes.Type;
 import org.bcos.web3j.abi.datatypes.Utf8String;
+import org.bcos.web3j.abi.datatypes.generated.Uint256;
 import org.bcos.web3j.crypto.Credentials;
 import org.bcos.web3j.crypto.GenCredential;
 import org.bcos.web3j.protocol.Web3j;
 
 import com.esunny.connection.Context;
+import com.esunny.contract.GroupFactory;
 import com.esunny.ui.util.DialogUtils;
 import com.esunny.util.Storage;
 
@@ -33,13 +37,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class GroupManagerController {
-    
-    private static final String GROUP_NUM_KEY = "group_number";
-    private static final String GROUP_PREFIX = "group_";
-    
+     
     private Web3j web3;
     private ToolConf toolConf;
     private Credentials credentials;
+    
+    private GroupFactory groupFactory;
     
     private List<Group> groupList = new ArrayList<Group>();
     
@@ -70,131 +73,44 @@ public class GroupManagerController {
             List<Type> contractAbiMgrRoute = systemProxy.getRoute(new Utf8String("ContractAbiMgr")).get();
             contractAbiMgr = ContractAbiMgr.load(
                     contractAbiMgrRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+
+            String contractAddr = contractAbiMgr.getAddr(new Utf8String("GroupFactory")).get().toString();
+            System.out.println(contractAddr);
+            groupFactory = GroupFactory.load(contractAddr, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            System.out.println(groupFactory);
+            System.out.println(groupFactory.getAllGroups().get());
+            List<Address> groupAddrList = groupFactory.getAllGroups().get().getValue();
+            for (Address addr : groupAddrList) {
+                addGroup(addr.toString());
+            }
         } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            System.exit(-1);
         }    
-        
-        Storage storage = Storage.getInstance();
-        String groupNumberStr = storage.get(GROUP_NUM_KEY);
-        if (groupNumberStr == null) {
-            storage.put(GROUP_NUM_KEY, "0");
-            return;
-        } 
-        
-        int groupNumber = Integer.parseInt(groupNumberStr); 
-        
-        int groupIndex = 0;
-        while (groupIndex < groupNumber) {
-            String groupInfoStr = storage.get(GROUP_PREFIX + groupIndex);
-            if (groupInfoStr == null)
-                break;
-            System.out.println("group "+ groupIndex + ":" + groupInfoStr);
-            addGroupTab(groupIndex, groupInfoStr);
-            // TODO address add group tab
-            ++groupIndex;
-        }
-        
-        if (groupIndex < groupNumber)
-            storage.put(GROUP_NUM_KEY, "" + groupIndex);
         
     }
     
     @FXML
     private void addGroup(Event event) {  
-        Group group;
+        String groupAddress;
         try {
-            group = Group.deploy(web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT, Context.INIT_WEI).get();
+            groupFactory.newGroup().get();
+            groupAddress = groupFactory.getGroup(new Uint256(groupList.size())).get().toString();
         } catch (InterruptedException | ExecutionException e) { 
             e.printStackTrace();
             return;
         }
         
-        groupList.add(group);
-
-        int groupIndex = 0;
-        Storage storage = Storage.getInstance();
-        String groupAddress = group.getContractAddress();
-        String groupNumberStr = storage.get(GROUP_NUM_KEY);
-        if (groupNumberStr != null) { 
-            groupIndex = Integer.parseInt(groupNumberStr);
-        }
-        storage.put(GROUP_PREFIX + groupIndex, groupAddress);
-        storage.put(GROUP_NUM_KEY, "" + (groupIndex + 1));
-        
-        System.out.println(groupAddress);
-        addGroupTab(groupIndex, group);
+        addGroup(groupAddress);
     }
     
-    private String openImportGroupDialog() {
-        try {
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/esunny/view/dialog_import_group.fxml"));
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("New Contract");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(anchorPane.getScene().getWindow());
-            Scene scene = new Scene(loader.load());
-            dialogStage.setScene(scene);
-            dialogStage.setResizable(false);
-
-            ImportGroupDialogController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-
-            dialogStage.showAndWait();
-
-            if (controller.isConfirmed()) {  
-                return controller.getGroupAddress();
-            }
-            
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return new String();
-    }
-    
-    @FXML
-    private void importGroup(Event event) {  
-        
-        String groupAddress = openImportGroupDialog();
-        if (groupAddress.isEmpty()) {
-            DialogUtils.alert("用户组地址格式不正确");
-            return;
-        }
-        
-        Group group;
-        try {
-            group = Group.load(groupAddress, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
-            group.getDesc().get(); // 只是为了测试地址是否正确
-        } catch (InterruptedException | ExecutionException e) { 
-            e.printStackTrace();
-            return;
-        }
-        
-        groupList.add(group);
-
-        int groupIndex = 0;
-        Storage storage = Storage.getInstance(); 
-        String groupNumberStr = storage.get(GROUP_NUM_KEY);
-        if (groupNumberStr != null) { 
-            groupIndex = Integer.parseInt(groupNumberStr);
-        }
-        storage.put(GROUP_PREFIX + groupIndex, groupAddress);
-        storage.put(GROUP_NUM_KEY, "" + (groupIndex + 1));
-        
-        System.out.println(groupAddress);
-        addGroupTab(groupIndex, group);
-    }
-    
-    private void addGroupTab(int groupIndex, String groupAddress) {
+    private void addGroup(String groupAddress) {
         
         Group group = Group.load(groupAddress, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
         
         groupList.add(group);
         
-        addGroupTab(groupIndex, group);
+        addGroupTab(groupList.size() - 1, group);
     }
     
     private void addGroupTab(int groupIndex, Group group) {
@@ -231,8 +147,7 @@ public class GroupManagerController {
         String contractAddr;
         try {
             contractAddr = contractAbiMgr.getAddr(new Utf8String(contractName)).get().toString();
-        } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
+        } catch (InterruptedException | ExecutionException e) { 
             e.printStackTrace();
             DialogUtils.alert("CNS查询失败");
             return;

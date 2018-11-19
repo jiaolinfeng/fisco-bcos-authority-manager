@@ -13,8 +13,7 @@
 	<children>
       <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-				<Button mnemonicParsing="false" onAction="#addGroup" text="创建组" prefHeight="25.0" />
-				<Button mnemonicParsing="false" onAction="#importGroup" text="导入组" prefHeight="25.0" />
+				<Button mnemonicParsing="false" onAction="#addGroup" text="创建组" prefHeight="25.0" /> 
          </children>
          <opaqueInsets>
             <Insets />

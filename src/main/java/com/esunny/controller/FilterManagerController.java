@@ -63,7 +63,7 @@ public class FilterManagerController {
         web3 = Context.getInstance().getWeb3();
         toolConf = Context.getInstance().getContext().getBean(ToolConf.class);
         credentials = GenCredential.create(toolConf.getPrivKey());
-        
+        System.out.println("SystemProxy " + toolConf.getSystemProxyAddress());
         try {
             SystemProxy systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), 
                     web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
@@ -72,6 +72,7 @@ public class FilterManagerController {
                     transactionFilterChainRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);        
         } catch (Exception e) {
             e.printStackTrace();
+            System.exit(-1);
         }
         
         load();
