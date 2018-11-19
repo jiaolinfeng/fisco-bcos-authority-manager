@@ -69,9 +69,11 @@ public class FilterManagerController {
                     web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
             List<Type> transactionFilterChainRoute = systemProxy.getRoute(new Utf8String("TransactionFilterChain")).get();    
             filterChain = TransactionFilterChain.load(
-                    transactionFilterChainRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);        
+                    transactionFilterChainRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT); 
+            filterChain.getFiltersLength().get();
         } catch (Exception e) {
             e.printStackTrace();
+            DialogUtils.alert("初始化权限错误");
             System.exit(-1);
         }
         

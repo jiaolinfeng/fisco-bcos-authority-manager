@@ -85,6 +85,7 @@ public class GroupManagerController {
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            DialogUtils.alert("初始化CNS错误"); 
             System.exit(-1);
         }    
         
