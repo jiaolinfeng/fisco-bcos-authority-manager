@@ -7,6 +7,9 @@ import java.util.Map.Entry;
 
 import org.bcos.channel.client.Service;
 import org.bcos.channel.handler.ChannelConnections;
+import org.bcos.contract.tools.ToolConf;
+import org.bcos.web3j.crypto.Credentials;
+import org.bcos.web3j.crypto.GenCredential;
 import org.bcos.web3j.protocol.Web3j;
 import org.bcos.web3j.protocol.channel.ChannelEthereumService;
 import org.bcos.web3j.protocol.core.methods.response.Log;
@@ -24,6 +27,8 @@ public class Context {
     private ApplicationContext context = null;
     private Service service = null;
     private Web3j web3 = null;
+    private Credentials credentials = null;
+    private String systemAddr = null;
 
     public static final BigInteger GAS_PRICE = new BigInteger("99999999999");
     public static final BigInteger GAS_LIMIT = new BigInteger("9999999999999");
@@ -38,6 +43,18 @@ public class Context {
         return inst;
     }
 
+    public static Web3j web3() {
+        return getInstance().getWeb3();
+    }
+    
+    public static Credentials credentials() {
+        return getInstance().getCredentials();
+    }
+    
+    public static String systemAddr() {
+        return getInstance().getSystemAddr();
+    }
+    
     public boolean init() {
         if (isInit) {
             return true;
@@ -71,6 +88,9 @@ public class Context {
             channelEthereumService.setChannelService(service);
             channelEthereumService.setTimeout(10000);
             web3 = Web3j.build(channelEthereumService);
+            ToolConf toolConf = context.getBean(ToolConf.class);
+            credentials = GenCredential.create(toolConf.getPrivKey());
+            systemAddr = toolConf.getSystemProxyAddress();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,6 +122,24 @@ public class Context {
 
     public boolean isReady() {
         return isInit;
+    }
+
+    public Credentials getCredentials() {
+        if (!isInit)
+            return null;
+        return credentials;
+    }
+
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
+
+    public String getSystemAddr() {
+        return systemAddr;
+    }
+
+    public void setSystemAddr(String systemAddr) {
+        this.systemAddr = systemAddr;
     }
 
 

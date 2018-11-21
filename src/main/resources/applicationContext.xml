@@ -30,7 +30,7 @@
 	
 
 	<bean id="toolConf" class="org.bcos.contract.tools.ToolConf">
-		<property name="systemProxyAddress" value="0x0fb7f9f491aed1b042d19c1898015473a45e2551" />
+		<property name="systemProxyAddress" value="0x6adf00e3d71b37e4f5f877703c0b85ab805c8c1c" />
 	    
 	    <!-- god -->
 	    <property name="privKey" value="d6b9a66ae48ae8ac586a7856a7bd566cff0b6f40cd12924929754233c50524d5" />

@@ -53,23 +53,15 @@ public class FilterManagerController {
     private TransactionFilterChain filterChain;
     
     private Set<String> filterAddrTable = new HashSet<String>();
-    
-    private Web3j web3;
-    private ToolConf toolConf;
-    private Credentials credentials;
-    
+      
     @FXML
-    private void initialize() {
-        web3 = Context.getInstance().getWeb3();
-        toolConf = Context.getInstance().getContext().getBean(ToolConf.class);
-        credentials = GenCredential.create(toolConf.getPrivKey());
-        System.out.println("SystemProxy " + toolConf.getSystemProxyAddress());
+    private void initialize() {  
         try {
-            SystemProxy systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), 
-                    web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            SystemProxy systemProxy = SystemProxy.load(Context.systemAddr(), 
+                    Context.web3(), Context.credentials(), Context.GAS_PRICE, Context.GAS_LIMIT);
             List<Type> transactionFilterChainRoute = systemProxy.getRoute(new Utf8String("TransactionFilterChain")).get();    
-            filterChain = TransactionFilterChain.load(
-                    transactionFilterChainRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT); 
+            filterChain = TransactionFilterChain.load(transactionFilterChainRoute.get(0).toString(), 
+                    Context.web3(), Context.credentials(), Context.GAS_PRICE, Context.GAS_LIMIT); 
             filterChain.getFiltersLength().get();
         } catch (Exception e) {
             e.printStackTrace();
@@ -90,7 +82,8 @@ public class FilterManagerController {
                 String filterAddress = filterChain.getFilter(new Uint256(i)).get().toString();
                 boolean isExist = !filterAddrTable.add(filterAddress);
                 if (!isExist) {
-                    AuthorityFilter filter = AuthorityFilter.load(filterAddress, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+                    AuthorityFilter filter = AuthorityFilter.load(filterAddress, 
+                            Context.web3(), Context.credentials(), Context.GAS_PRICE, Context.GAS_LIMIT);
                     List<Type> filterInfo = filter.getInfo().get();
                     System.out.println(filterInfo.get(0) + " " + filterInfo.get(2));
                     
@@ -105,7 +98,7 @@ public class FilterManagerController {
                 }
             }  
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace();
         }
     }
     
@@ -158,8 +151,7 @@ public class FilterManagerController {
        
         try {
             filterChain.addFilterAndInfo(new Utf8String(filterName), new Utf8String(""), new Utf8String(filterDesc)).get();
-        } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
+        } catch (InterruptedException | ExecutionException e) { 
             e.printStackTrace();
             DialogUtils.alert("过滤器创建失败");
             return;

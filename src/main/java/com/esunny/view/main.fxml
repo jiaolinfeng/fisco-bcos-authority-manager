@@ -6,20 +6,20 @@
 
 
 <AnchorPane prefHeight="620.0" prefWidth="820.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171">
-   <children>  <fx:include source="authority_manager.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-   <!-- 
+   <children>  
       <TabPane layoutX="14.0" layoutY="7.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab text=" 权限管理 ">
             <content> 
-              
+               <fx:include source="authority_manager.fxml"  />
             </content>
           </Tab>
           <Tab text=" 身份管理 ">
             <content> 
+               <fx:include source="identity_manager.fxml"  />
             </content>
           </Tab>
         </tabs>
-      </TabPane> -->
+      </TabPane>  
    </children>
 </AnchorPane>

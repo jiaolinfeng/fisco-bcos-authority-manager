@@ -38,9 +38,7 @@ import javafx.stage.Stage;
 
 public class GroupManagerController {
      
-    private Web3j web3;
-    private ToolConf toolConf;
-    private Credentials credentials;
+ 
     
     private GroupFactory groupFactory;
     
@@ -61,22 +59,19 @@ public class GroupManagerController {
     private ContractAbiMgr contractAbiMgr;
     
     @FXML
-    private void initialize() {
-        web3 = Context.getInstance().getWeb3();
-        toolConf = Context.getInstance().getContext().getBean(ToolConf.class);
-        credentials = GenCredential.create(toolConf.getPrivKey());
-        
+    private void initialize() { 
         
         try {
-            SystemProxy systemProxy = SystemProxy.load(toolConf.getSystemProxyAddress(), 
-                    web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            SystemProxy systemProxy = SystemProxy.load(Context.systemAddr(), 
+                    Context.web3(), Context.credentials(), Context.GAS_PRICE, Context.GAS_LIMIT);
             List<Type> contractAbiMgrRoute = systemProxy.getRoute(new Utf8String("ContractAbiMgr")).get();
-            contractAbiMgr = ContractAbiMgr.load(
-                    contractAbiMgrRoute.get(0).toString(), web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            contractAbiMgr = ContractAbiMgr.load(contractAbiMgrRoute.get(0).toString(),
+                    Context.web3(), Context.credentials(), Context.GAS_PRICE, Context.GAS_LIMIT);
 
             String contractAddr = contractAbiMgr.getAddr(new Utf8String("GroupFactory")).get().toString();
             System.out.println(contractAddr);
-            groupFactory = GroupFactory.load(contractAddr, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+            groupFactory = GroupFactory.load(contractAddr, 
+                    Context.web3(), Context.credentials(), Context.GAS_PRICE, Context.GAS_LIMIT);
             System.out.println(groupFactory);
             System.out.println(groupFactory.getAllGroups().get());
             List<Address> groupAddrList = groupFactory.getAllGroups().get().getValue();
@@ -107,7 +102,7 @@ public class GroupManagerController {
     
     private void addGroup(String groupAddress) {
         
-        Group group = Group.load(groupAddress, web3, credentials, Context.GAS_PRICE, Context.GAS_LIMIT);
+        Group group = Group.load(groupAddress, Context.web3(), Context.credentials(), Context.GAS_PRICE, Context.GAS_LIMIT);
         
         groupList.add(group);
         
