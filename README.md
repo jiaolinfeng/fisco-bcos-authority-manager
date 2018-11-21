@@ -1,5 +1,5 @@
 # fisco-bcos-authority-manager
-#####A Java Client for FISCO BCOS authority manager
+## A Java Client for FISCO BCOS authority manager
 
 说明：
 > 金链盟FISCO-BCOS平台提供有基于ARPI的权限管理模型，但是直接使用脚本不方便对权限进行权限控制.
